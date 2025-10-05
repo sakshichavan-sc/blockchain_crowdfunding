@@ -1,0 +1,213 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Navbar } from "@/components/layout/Navbar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon, Rocket } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+
+export default function CreateCampaign() {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [date, setDate] = useState<Date>();
+
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    category: "",
+    goalAmount: "",
+    deadline: "",
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    // Validation
+    if (!formData.title || !formData.description || !formData.category || !formData.goalAmount || !date) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all fields",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Simulate blockchain transaction
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    toast({
+      title: "Campaign Created!",
+      description: "Your campaign has been deployed on Polygon Amoy",
+    });
+
+    setIsSubmitting(false);
+    navigate("/");
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-foreground mb-4">
+              Create Campaign
+            </h1>
+            <p className="text-muted-foreground">
+              Launch your crowdfunding campaign on the blockchain
+            </p>
+          </div>
+
+          <Card className="p-8 bg-card/50 backdrop-blur-sm border-border/50">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="title">Campaign Title *</Label>
+                <Input
+                  id="title"
+                  placeholder="e.g., Build a School in Rural India"
+                  value={formData.title}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
+                  className="bg-background"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">Description *</Label>
+                <Textarea
+                  id="description"
+                  placeholder="Tell people about your campaign..."
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                  rows={6}
+                  className="bg-background resize-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="category">Category *</Label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, category: value })
+                    }
+                  >
+                    <SelectTrigger className="bg-background">
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="education">Education</SelectItem>
+                      <SelectItem value="health">Health</SelectItem>
+                      <SelectItem value="business">Business</SelectItem>
+                      <SelectItem value="market">Market</SelectItem>
+                      <SelectItem value="tech">Technology</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="goal">Funding Goal (MATIC) *</Label>
+                  <Input
+                    id="goal"
+                    type="number"
+                    placeholder="100"
+                    value={formData.goalAmount}
+                    onChange={(e) =>
+                      setFormData({ ...formData, goalAmount: e.target.value })
+                    }
+                    className="bg-background"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Campaign Deadline *</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal bg-background",
+                        !date && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {date ? format(date, "PPP") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={setDate}
+                      disabled={(date) => date < new Date()}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="bg-muted/50 p-4 rounded-lg space-y-2">
+                <h3 className="font-semibold text-foreground">
+                  Campaign Rules
+                </h3>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>
+                    ✓ If funding goal is met before deadline, you can withdraw
+                    funds
+                  </li>
+                  <li>
+                    ✓ If goal is not met by deadline, all backers receive
+                    automatic refunds
+                  </li>
+                  <li>
+                    ✓ Backers earn NFT badges based on donation amount (10+,
+                    20+, 30+ MATIC)
+                  </li>
+                </ul>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity text-lg py-6"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  "Deploying Campaign..."
+                ) : (
+                  <>
+                    <Rocket className="mr-2 h-5 w-5" />
+                    Launch Campaign
+                  </>
+                )}
+              </Button>
+            </form>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
