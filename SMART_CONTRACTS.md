@@ -19,8 +19,7 @@ foundryup
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 interface INFTReward {
     function mintReward(address to, uint256 amount) external returns (uint256);
@@ -168,11 +167,9 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract NFTReward is ERC721, ERC721URIStorage, Ownable {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+    uint256 private _tokenIds;
     
     enum BadgeTier { BRONZE, SILVER, GOLD }
     
@@ -192,7 +189,7 @@ contract NFTReward is ERC721, ERC721URIStorage, Ownable {
     
     event BadgeMinted(address indexed recipient, uint256 tokenId, BadgeTier tier, uint256 amount);
     
-    constructor() ERC721("CryptoFund Badge", "CFBADGE") {
+    constructor(address initialOwner) ERC721("CryptoFund Badge", "CFBADGE") Ownable(initialOwner) {
         // Set default metadata URIs
         bronzeURI = "ipfs://QmBronzeMetadata";
         silverURI = "ipfs://QmSilverMetadata";
@@ -227,8 +224,8 @@ contract NFTReward is ERC721, ERC721URIStorage, Ownable {
             uri = bronzeURI;
         }
         
-        _tokenIds.increment();
-        uint256 newTokenId = _tokenIds.current();
+        _tokenIds++;
+        uint256 newTokenId = _tokenIds;
         
         _safeMint(to, newTokenId);
         _setTokenURI(newTokenId, uri);
@@ -317,7 +314,7 @@ contract CampaignFactory is Ownable {
         uint256 deadline
     );
     
-    constructor(address _nftReward) {
+    constructor(address _nftReward) Ownable(msg.sender) {
         nftReward = _nftReward;
     }
     
@@ -378,26 +375,32 @@ const hre = require("hardhat");
 async function main() {
   console.log("Deploying contracts to Polygon Amoy Testnet...");
 
+  // Get deployer address
+  const [deployer] = await hre.ethers.getSigners();
+  console.log("Deploying with account:", deployer.address);
+
   // Deploy NFT Reward contract
   const NFTReward = await hre.ethers.getContractFactory("NFTReward");
-  const nftReward = await NFTReward.deploy();
-  await nftReward.deployed();
-  console.log("NFTReward deployed to:", nftReward.address);
+  const nftReward = await NFTReward.deploy(deployer.address);
+  await nftReward.waitForDeployment();
+  console.log("NFTReward deployed to:", await nftReward.getAddress());
 
   // Deploy Campaign Factory
   const CampaignFactory = await hre.ethers.getContractFactory("CampaignFactory");
-  const factory = await CampaignFactory.deploy(nftReward.address);
-  await factory.deployed();
-  console.log("CampaignFactory deployed to:", factory.address);
+  const nftRewardAddress = await nftReward.getAddress();
+  const factory = await CampaignFactory.deploy(nftRewardAddress);
+  await factory.waitForDeployment();
+  const factoryAddress = await factory.getAddress();
+  console.log("CampaignFactory deployed to:", factoryAddress);
 
-  // Transfer NFTReward ownership to factory for authorization
-  await nftReward.transferOwnership(factory.address);
-  console.log("NFTReward ownership transferred to factory");
+  // Authorize factory to mint NFTs
+  await nftReward.authorizeCampaign(factoryAddress);
+  console.log("Factory authorized to mint NFTs");
 
   console.log("\n=== Deployment Summary ===");
-  console.log("NFTReward:", nftReward.address);
-  console.log("CampaignFactory:", factory.address);
-  console.log("\nSave these addresses in your frontend .env file!");
+  console.log("NFTReward:", nftRewardAddress);
+  console.log("CampaignFactory:", factoryAddress);
+  console.log("\nSave these addresses in your frontend config file!");
 }
 
 main()
