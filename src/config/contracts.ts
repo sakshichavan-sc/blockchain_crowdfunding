@@ -8,7 +8,7 @@ export const RPC_URL = "https://rpc-amoy.polygon.technology";
 export const BLOCK_EXPLORER = "https://amoy.polygonscan.com";
 
 // Contract Addresses - UPDATE THESE AFTER DEPLOYMENT
-export const CAMPAIGN_FACTORY_ADDRESS = "0x0000000000000000000000000000000000000000"; // Replace with deployed address
+export const CAMPAIGN_FACTORY_ADDRESS = "0x000DbD7E8eEA1C8b74bA0531872bFF4A664DdFa5"; // CampaignFactory deployed on Polygon Amoy
 export const NFT_REWARD_ADDRESS = "0x0000000000000000000000000000000000000000"; // Replace with deployed address
 
 // Contract ABIs
