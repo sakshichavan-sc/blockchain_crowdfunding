@@ -3,69 +3,12 @@ import { CampaignCard } from "@/components/campaigns/CampaignCard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Navbar } from "@/components/layout/Navbar";
-import { TrendingUp, Sparkles } from "lucide-react";
-
-// Mock data - will be replaced with blockchain data
-const mockCampaigns = [
-  {
-    id: "1",
-    title: "Build a School in Rural India",
-    description: "Help us construct a primary school to provide quality education to 500+ children in underserved communities.",
-    category: "education",
-    goalAmount: 100,
-    currentAmount: 65,
-    deadline: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
-    creator: "0x1234...5678",
-    backers: 45,
-  },
-  {
-    id: "2",
-    title: "Medical Equipment for Local Clinic",
-    description: "Fundraising for essential medical equipment to serve 1000+ patients monthly in our community health center.",
-    category: "health",
-    goalAmount: 80,
-    currentAmount: 52,
-    deadline: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
-    creator: "0xabcd...efgh",
-    backers: 38,
-  },
-  {
-    id: "3",
-    title: "Small Business Loan for Women Entrepreneurs",
-    description: "Empowering 20 women entrepreneurs with microloans to start sustainable businesses.",
-    category: "business",
-    goalAmount: 50,
-    currentAmount: 42,
-    deadline: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
-    creator: "0x9876...5432",
-    backers: 28,
-  },
-  {
-    id: "4",
-    title: "Community Farmers Market Infrastructure",
-    description: "Building infrastructure for a weekly farmers market to support 50+ local farmers.",
-    category: "market",
-    goalAmount: 60,
-    currentAmount: 15,
-    deadline: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
-    creator: "0xdef0...1234",
-    backers: 12,
-  },
-  {
-    id: "5",
-    title: "Open Source Educational Platform",
-    description: "Developing a free, open-source learning platform for underserved communities worldwide.",
-    category: "tech",
-    goalAmount: 120,
-    currentAmount: 88,
-    deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-    creator: "0x5555...9999",
-    backers: 67,
-  },
-];
+import { TrendingUp, Sparkles, Loader2 } from "lucide-react";
+import { useCampaigns } from "@/hooks/useCampaigns";
 
 const categories = [
   "all",
+  "general",
   "education",
   "health",
   "business",
@@ -77,8 +20,9 @@ const categories = [
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState<"trending" | "new">("trending");
+  const { campaigns, loading, error } = useCampaigns();
 
-  const filteredCampaigns = mockCampaigns.filter(
+  const filteredCampaigns = campaigns.filter(
     (campaign) =>
       selectedCategory === "all" || campaign.category === selectedCategory
   );
@@ -193,18 +137,36 @@ export default function Home() {
           </TabsList>
         </Tabs>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCampaigns.map((campaign) => (
-            <CampaignCard key={campaign.id} campaign={campaign} />
-          ))}
-        </div>
-
-        {filteredCampaigns.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">
-              No campaigns found in this category
-            </p>
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-3 text-muted-foreground">
+              Loading campaigns from blockchain...
+            </span>
           </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-destructive mb-2">Failed to load campaigns</p>
+            <p className="text-sm text-muted-foreground">{error}</p>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredCampaigns.map((campaign) => (
+                <CampaignCard key={campaign.id} campaign={campaign} />
+              ))}
+            </div>
+
+            {filteredCampaigns.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">
+                  {campaigns.length === 0
+                    ? "No campaigns created yet. Be the first to create one!"
+                    : "No campaigns found in this category"}
+                </p>
+              </div>
+            )}
+          </>
         )}
       </section>
     </div>
