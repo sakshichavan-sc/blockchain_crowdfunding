@@ -13,7 +13,7 @@ export const NFT_REWARD_ADDRESS = "0x0000000000000000000000000000000000000000"; 
 
 // Contract ABIs
 export const CAMPAIGN_FACTORY_ABI = [
-  "function createCampaign(string title, string description, uint256 goalAmount, uint256 duration) external returns (address)",
+  "function createCampaign(string title, string description, string category, uint256 goalAmount, uint256 deadline) external returns (address)",
   "function getCampaigns() external view returns (address[])",
   "function getCampaignsByCreator(address creator) external view returns (address[])",
   "event CampaignCreated(address indexed campaignAddress, address indexed creator, string title, uint256 goalAmount, uint256 deadline)"
@@ -22,6 +22,7 @@ export const CAMPAIGN_FACTORY_ABI = [
 export const CAMPAIGN_ABI = [
   "function title() external view returns (string)",
   "function description() external view returns (string)",
+  "function category() external view returns (string)",
   "function creator() external view returns (address)",
   "function goalAmount() external view returns (uint256)",
   "function currentAmount() external view returns (uint256)",
