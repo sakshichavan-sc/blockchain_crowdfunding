@@ -19,6 +19,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon, Rocket } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { ethers } from "ethers";
+import { CAMPAIGN_FACTORY_ADDRESS, CAMPAIGN_FACTORY_ABI, getTxUrl } from "@/config/contracts";
 
 export default function CreateCampaign() {
   const navigate = useNavigate();
@@ -49,16 +51,94 @@ export default function CreateCampaign() {
       return;
     }
 
-    // Simulate blockchain transaction
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      // Check if MetaMask is installed
+      if (!window.ethereum) {
+        toast({
+          title: "MetaMask Not Found",
+          description: "Please install MetaMask to create campaigns",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
 
-    toast({
-      title: "Campaign Created!",
-      description: "Your campaign has been deployed on Polygon Amoy",
-    });
+      // Request account access
+      await window.ethereum.request({ method: "eth_requestAccounts" });
 
-    setIsSubmitting(false);
-    navigate("/");
+      // Create provider and signer
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+
+      // Create contract instance
+      const factory = new ethers.Contract(
+        CAMPAIGN_FACTORY_ADDRESS,
+        CAMPAIGN_FACTORY_ABI,
+        signer
+      );
+
+      // Convert deadline to Unix timestamp (in seconds)
+      const deadlineTimestamp = Math.floor(date.getTime() / 1000);
+
+      // Convert goal amount to Wei
+      const goalAmountWei = ethers.parseEther(formData.goalAmount);
+
+      toast({
+        title: "Creating Campaign...",
+        description: "Please confirm the transaction in MetaMask",
+      });
+
+      // Call createCampaign function
+      const tx = await factory.createCampaign(
+        formData.title,
+        formData.description,
+        formData.category,
+        goalAmountWei,
+        deadlineTimestamp
+      );
+
+      toast({
+        title: "Transaction Submitted",
+        description: "Waiting for confirmation...",
+      });
+
+      // Wait for transaction to be mined
+      const receipt = await tx.wait();
+
+      toast({
+        title: "Campaign Created!",
+        description: "Your campaign has been deployed on Polygon Amoy",
+        action: (
+          <a
+            href={getTxUrl(receipt.hash)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            View Transaction
+          </a>
+        ),
+      });
+
+      setIsSubmitting(false);
+      navigate("/");
+    } catch (error: any) {
+      console.error("Error creating campaign:", error);
+      
+      let errorMessage = "Failed to create campaign";
+      if (error.code === "ACTION_REJECTED") {
+        errorMessage = "Transaction was rejected";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+    }
   };
 
   return (
