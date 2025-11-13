@@ -79,10 +79,11 @@ export default function Home() {
               <div className="text-3xl font-bold text-success">5,400+</div>
               <div className="text-sm text-muted-foreground">Backers</div>
             </div>
-            <div>
+            {/* NFT Stats - COMMENTED OUT FOR NOW (Phase 2) */}
+            {/* <div>
               <div className="text-3xl font-bold text-gold">3,200+</div>
               <div className="text-sm text-muted-foreground">NFTs Minted</div>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
