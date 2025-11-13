@@ -9,7 +9,8 @@ export const BLOCK_EXPLORER = "https://amoy.polygonscan.com";
 
 // Contract Addresses - UPDATE THESE AFTER DEPLOYMENT
 export const CAMPAIGN_FACTORY_ADDRESS = "0x000DbD7E8eEA1C8b74bA0531872bFF4A664DdFa5"; // CampaignFactory deployed on Polygon Amoy
-export const NFT_REWARD_ADDRESS = "0x0000000000000000000000000000000000000000"; // Replace with deployed address
+// NFT Rewards - COMMENTED OUT FOR NOW (Phase 2)
+// export const NFT_REWARD_ADDRESS = "0x0000000000000000000000000000000000000000"; // Replace with deployed address
 
 // Contract ABIs
 export const CAMPAIGN_FACTORY_ABI = [
@@ -38,26 +39,27 @@ export const CAMPAIGN_ABI = [
   "event Withdrawn(address indexed creator, uint256 amount)"
 ];
 
-export const NFT_REWARD_ABI = [
-  "function mintBadge(address to, uint256 donationAmount, address campaignAddress) external returns (uint256)",
-  "function getBadgesByOwner(address owner) external view returns (uint256[])",
-  "function getBadgeInfo(uint256 tokenId) external view returns (uint8 tier, uint256 donationAmount, address campaignAddress, uint256 mintedAt)",
-  "function tokenURI(uint256 tokenId) external view returns (string)",
-  "event BadgeMinted(address indexed recipient, uint256 indexed tokenId, uint8 tier, uint256 donationAmount, address campaignAddress)"
-];
+// NFT Rewards - COMMENTED OUT FOR NOW (Phase 2)
+// export const NFT_REWARD_ABI = [
+//   "function mintBadge(address to, uint256 donationAmount, address campaignAddress) external returns (uint256)",
+//   "function getBadgesByOwner(address owner) external view returns (uint256[])",
+//   "function getBadgeInfo(uint256 tokenId) external view returns (uint8 tier, uint256 donationAmount, address campaignAddress, uint256 mintedAt)",
+//   "function tokenURI(uint256 tokenId) external view returns (string)",
+//   "event BadgeMinted(address indexed recipient, uint256 indexed tokenId, uint8 tier, uint256 donationAmount, address campaignAddress)"
+// ];
 
-// NFT Badge Tiers
-export const BADGE_TIERS = {
-  BRONZE: { min: 0.1, name: 'Bronze Supporter', tier: 1 },
-  SILVER: { min: 0.5, name: 'Silver Supporter', tier: 2 },
-  GOLD: { min: 1.0, name: 'Gold Supporter', tier: 3 },
-} as const;
+// // NFT Badge Tiers
+// export const BADGE_TIERS = {
+//   BRONZE: { min: 0.1, name: 'Bronze Supporter', tier: 1 },
+//   SILVER: { min: 0.5, name: 'Silver Supporter', tier: 2 },
+//   GOLD: { min: 1.0, name: 'Gold Supporter', tier: 3 },
+// } as const;
 
-export const getBadgeTier = (amount: number): 'bronze' | 'silver' | 'gold' => {
-  if (amount >= BADGE_TIERS.GOLD.min) return 'gold';
-  if (amount >= BADGE_TIERS.SILVER.min) return 'silver';
-  return 'bronze';
-};
+// export const getBadgeTier = (amount: number): 'bronze' | 'silver' | 'gold' => {
+//   if (amount >= BADGE_TIERS.GOLD.min) return 'gold';
+//   if (amount >= BADGE_TIERS.SILVER.min) return 'silver';
+//   return 'bronze';
+// };
 
 // Helper to check if network is correct
 export const isCorrectNetwork = (chainId: number): boolean => {

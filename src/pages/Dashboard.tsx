@@ -2,15 +2,17 @@ import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BadgeDisplay } from "@/components/nft/BadgeDisplay";
-import { Award, TrendingUp, Heart } from "lucide-react";
+// import { BadgeDisplay } from "@/components/nft/BadgeDisplay"; // NFT - Phase 2
+import { TrendingUp, Heart } from "lucide-react";
+// import { Award } from "lucide-react"; // NFT - Phase 2
 
 // Mock data
-const mockBadges = [
-  { tier: "gold" as const, amount: 35, tokenId: 1234 },
-  { tier: "silver" as const, amount: 22, tokenId: 5678 },
-  { tier: "bronze" as const, amount: 15, tokenId: 9012 },
-];
+// NFT Badges - COMMENTED OUT FOR NOW (Phase 2)
+// const mockBadges = [
+//   { tier: "gold" as const, amount: 35, tokenId: 1234 },
+//   { tier: "silver" as const, amount: 22, tokenId: 5678 },
+//   { tier: "bronze" as const, amount: 15, tokenId: 9012 },
+// ];
 
 const mockDonations = [
   {
@@ -37,7 +39,7 @@ const mockDonations = [
 ];
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState("badges");
+  const [activeTab, setActiveTab] = useState("donations"); // Changed from "badges" to "donations"
 
   const totalDonated = mockDonations.reduce(
     (sum, donation) => sum + donation.amount,
@@ -55,7 +57,7 @@ export default function Dashboard() {
               My Dashboard
             </h1>
             <p className="text-muted-foreground">
-              Track your donations and NFT rewards
+              Track your campaign donations
             </p>
           </div>
 
@@ -93,7 +95,8 @@ export default function Dashboard() {
               </div>
             </Card>
 
-            <Card className="p-6 bg-gradient-to-br from-gold/10 to-warning/10 border-gold/20">
+            {/* NFT Badges Card - COMMENTED OUT FOR NOW (Phase 2) */}
+            {/* <Card className="p-6 bg-gradient-to-br from-gold/10 to-warning/10 border-gold/20">
               <div className="flex items-center gap-4">
                 <div className="h-12 w-12 rounded-lg bg-gold/20 flex items-center justify-center">
                   <Award className="h-6 w-6 text-gold" />
@@ -105,25 +108,27 @@ export default function Dashboard() {
                   </p>
                 </div>
               </div>
-            </Card>
+            </Card> */}
           </div>
 
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="mb-6">
-              <TabsTrigger value="badges" className="gap-2">
+              {/* NFT Badges Tab - COMMENTED OUT FOR NOW (Phase 2) */}
+              {/* <TabsTrigger value="badges" className="gap-2">
                 <Award className="h-4 w-4" />
                 My NFT Badges
-              </TabsTrigger>
+              </TabsTrigger> */}
               <TabsTrigger value="donations" className="gap-2">
                 <Heart className="h-4 w-4" />
                 Donation History
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="badges">
+            {/* NFT Badges Content - COMMENTED OUT FOR NOW (Phase 2) */}
+            {/* <TabsContent value="badges">
               <BadgeDisplay badges={mockBadges} />
-            </TabsContent>
+            </TabsContent> */}
 
             <TabsContent value="donations">
               <div className="space-y-4">

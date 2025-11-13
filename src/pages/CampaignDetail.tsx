@@ -53,16 +53,20 @@ export default function CampaignDetail() {
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     const amount = parseFloat(donationAmount);
-    let badge = "";
-    if (amount >= 30) badge = "Gold";
-    else if (amount >= 20) badge = "Silver";
-    else if (amount >= 10) badge = "Bronze";
+    
+    // NFT Badge minting - COMMENTED OUT FOR NOW (Phase 2)
+    // let badge = "";
+    // if (amount >= 30) badge = "Gold";
+    // else if (amount >= 20) badge = "Silver";
+    // else if (amount >= 10) badge = "Bronze";
 
     toast({
       title: "Donation Successful!",
-      description: badge
-        ? `Thank you for donating ${amount} MATIC! You earned a ${badge} badge NFT!`
-        : `Thank you for donating ${amount} MATIC!`,
+      description: `Thank you for donating ${amount} MATIC!`,
+      // NFT rewards disabled for now
+      // description: badge
+      //   ? `Thank you for donating ${amount} MATIC! You earned a ${badge} badge NFT!`
+      //   : `Thank you for donating ${amount} MATIC!`,
     });
 
     setIsDonating(false);
