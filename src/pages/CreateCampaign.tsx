@@ -20,7 +20,7 @@ import { CalendarIcon, Rocket } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { ethers } from "ethers";
-import { CAMPAIGN_FACTORY_ADDRESS, CAMPAIGN_FACTORY_ABI, getTxUrl } from "@/config/contracts";
+import { CAMPAIGN_FACTORY_ADDRESS, CAMPAIGN_FACTORY_ABI, CHAIN_ID, CHAIN_NAME, isCorrectNetwork, getTxUrl } from "@/config/contracts";
 
 export default function CreateCampaign() {
   const navigate = useNavigate();
@@ -69,6 +69,18 @@ export default function CreateCampaign() {
       // Create provider and signer
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
+
+      // Ensure correct network (Polygon Amoy)
+      const network = await provider.getNetwork();
+      if (!isCorrectNetwork(Number(network.chainId))) {
+        toast({
+          title: "Wrong Network",
+          description: `Please switch MetaMask to ${CHAIN_NAME} (chain ID ${CHAIN_ID}).`,
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
 
       // Create contract instance
       const factory = new ethers.Contract(
