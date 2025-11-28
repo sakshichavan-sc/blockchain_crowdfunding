@@ -62,6 +62,7 @@ export const useCampaigns = () => {
             const [
               title,
               description,
+              category,
               creator,
               goalAmount,
               currentAmount,
@@ -71,6 +72,7 @@ export const useCampaigns = () => {
             ] = await Promise.all([
               campaign.title(),
               campaign.description(),
+              campaign.category(),
               campaign.creator(),
               campaign.goalAmount(),
               campaign.currentAmount(),
@@ -84,7 +86,7 @@ export const useCampaigns = () => {
               address,
               title,
               description,
-              category: "general", // You can enhance this later
+              category,
               goalAmount: parseFloat(ethers.formatEther(goalAmount)),
               currentAmount: parseFloat(ethers.formatEther(currentAmount)),
               deadline: new Date(Number(deadline) * 1000),
