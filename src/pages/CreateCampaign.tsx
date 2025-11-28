@@ -79,6 +79,18 @@ export default function CreateCampaign() {
 
       // Convert deadline to Unix timestamp (in seconds)
       const deadlineTimestamp = Math.floor(date.getTime() / 1000);
+      const nowInSeconds = Math.floor(Date.now() / 1000);
+      const durationSeconds = deadlineTimestamp - nowInSeconds;
+
+      if (durationSeconds <= 0) {
+        toast({
+          title: "Invalid Deadline",
+          description: "Please choose a future date for your campaign deadline",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
 
       // Convert goal amount to Wei
       const goalAmountWei = ethers.parseEther(formData.goalAmount);
@@ -92,9 +104,8 @@ export default function CreateCampaign() {
       const tx = await factory.createCampaign(
         formData.title,
         formData.description,
-        formData.category,
         goalAmountWei,
-        deadlineTimestamp
+        durationSeconds
       );
 
       toast({
